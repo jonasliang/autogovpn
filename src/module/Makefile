@@ -1,10 +1,9 @@
 ARCH=arm
 obj-m += autogovpn.o
-#KDIR:=/lib/modules/$(shell uname -r)/build
-KDIR:=/home/lzj/github/rpi-linux
-
+KDIR:=/lib/modules/$(shell uname -r)/build
 
 PWD=$(shell pwd)
+
 all:
 	make -C $(KDIR) M=$(PWD) modules
 
