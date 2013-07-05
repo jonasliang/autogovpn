@@ -3,7 +3,7 @@
 
 static int agv_init()
 {
-    printk("hello!");
+    printk("hello!\n");
     return 0;
 }
 
@@ -16,4 +16,3 @@ module_init(agv_init);
 module_exit(agv_exit);
 MODULE_LICENSE("GPL\0 Author: jonas1q84@gmail.com");
 MODULE_DESCRIPTION("Packet mark driver for autogovpn");
-
