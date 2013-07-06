@@ -1,4 +1,4 @@
-开发日志
+﻿开发日志
 
 本工程目标是开发一个根据gfw所封堵的域名（如facebook、twitter）来自动选vpn线路的
 功能。gfwlist来源是autoproxy（https://code.google.com/p/autoproxy-gfwlist/）。通
