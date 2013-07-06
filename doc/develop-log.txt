@@ -1,0 +1,40 @@
+开发日志
+
+本工程目标是开发一个根据gfw所封堵的域名（如facebook、twitter）来自动选vpn线路的
+功能。gfwlist来源是autoproxy（https://code.google.com/p/autoproxy-gfwlist/）。通
+过获取gfwlist里面的所有域名，在域名解析阶段就选择走vpn线路，分析返回域名解析结果，
+把域名解析结果的IP地址也列入要走vpn线路。以此来达到自动vpn的目的。这样访问国内网
+站时不走vpn，页面速度有保证；访问gfw网站时则自动走vpn不被墙。
+
+07/05/2013 jonas1q84
+驱动基本工程建立好，可以直接make编译目标
+
+07/06/2013 jonas1q84
+获取分析gfwlist（svn co http://autoproxy-gfwlist.googlecode.com/svn/trunk）
+gfwlist是用了base64编码的，转回明文命令
+	openssl base64 -d -in gfwlist.txt -out list.txt
+明文格式如下：
+	! 开头为注释
+	@@ 开头为禁用条目
+	|| 开头为或关系
+由于我们是基于域名的，因此列表里面具体的url可以不需要，从gfwlist里面取出所有域名，
+然后去重即可。处理逻辑参考 reference/makeIP.py。这样域名来源算是ok了。
+
+现在考虑程序设计问题，先考虑驱动部分的。
+
+数据匹配：
+这里主要涉及到一个域名匹配、IP匹配问题。
+1、域名匹配是文本格式不定长的，从应用下发到驱动时，算成crc再下发。驱动存在用hash
+表。用rcu锁保护，重下配置采用hash表指针切换、magic计数触发重查路由的方式
+2、IP匹配表。从域名解析结果里面获取IP地址，放入表内，只要skb包目的IP匹配的即打上
+mark标记。也采用hash表保存，每个桶一把rcu锁。桶大小与nf_conntrack移植，容量也一致。
+hash表满时采用与nf_conntrack移植的随机drop机制。
+
+逻辑处理：
+1、作为最初版本，先支持本机使用，因此只要挂LOCAL_OUT和LOCAL_IN钩子。LOCAL_OUT钩子
+用来配置域名、目标IP地址、设置fwmark（驱动只mark不管路由，以简化逻辑）。LOCAL_IN
+钩子分析DNS回包，把结果IP放入IP匹配表。
+
+应用层逻辑
+1、配置下发，读取gfwlist文件，获取只有域名的列表，算成crc格式，下发到驱动。
+2、下发路由，下发策略路由，对有fwmark标记的包走vpn出口（fwmark由驱动打上）。
