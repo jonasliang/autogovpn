@@ -1,14 +1,20 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
+#include "domain_table.h"
+#include "agv_debug.h"
 
-static int agv_init()
+static int agv_init(void)
 {
-    printk("hello!\n");
-    return 0;
+	int ret = -1;
+	ret = domain_table_init();
+	AGV_PRINT("autogovpn succeeded to initialize! Built at: %s %s\n", 
+		__DATE__, __TIME__);
+    return ret;
 }
 
-static void agv_exit()
+static void agv_exit(void)
 {
+	domain_table_cleanup();
     return;
 }
 

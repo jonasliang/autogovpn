@@ -3,11 +3,17 @@
 
 #include "agv_common.h"
 
-int domain_list_init(struct domain_list_st* dlist);
+/*
+ * @brief: 域名列表初始化
+ * @return: 
+ */
+int domain_table_init(void);
 
-int domain_list_cleanup();
+void domain_table_cleanup(void);
 
-int domain_list_show();
+int domain_table_load(struct domain_list_st* dlist);
+
+int domain_table_show(void);
 
 int domain_match(const char* domain);
 
