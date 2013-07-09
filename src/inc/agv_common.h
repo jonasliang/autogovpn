@@ -7,7 +7,7 @@
 
 struct domain_list_st {
 	int m_size;					// size of m_domains
-	unsigned int m_domains[0];	// domain in crc32 format
+	unsigned int m_domains_crc[0];	// domain in crc32 format
 };
 
 #endif

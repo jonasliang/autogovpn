@@ -20,5 +20,7 @@ static void agv_exit(void)
 
 module_init(agv_init);
 module_exit(agv_exit);
-MODULE_LICENSE("GPL\0 Author: jonas1q84@gmail.com");
+
+MODULE_LICENSE("GPL");
+MODULE_AUTHOR("Jonas Liang (email: jonas1q84@gmail.com)");
 MODULE_DESCRIPTION("Packet mark driver for autogovpn");

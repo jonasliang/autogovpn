@@ -1,10 +1,9 @@
-TARGET=autogovpn_drv
+TARGET				:= autogovpn_drv
 
-KDIR:=/lib/modules/$(shell uname -r)/build
-
-MODULE_C_SOURCES 	= $(wildcard $(M)/*.c)
-MODULE_C_OBJS		= $(patsubst $(M)/%.c, %.o, $(MODULE_C_SOURCES))
-EXTRA_CFLAGS 		= -I$(PWD)/../inc
+KDIR				:= /lib/modules/$(shell uname -r)/build
+MODULE_C_SOURCES 	:= $(wildcard $(M)/*.c)
+MODULE_C_OBJS		:= $(patsubst $(M)/%.c, %.o, $(MODULE_C_SOURCES))
+EXTRA_CFLAGS 		:= -I$(PWD)/../inc
 
 $(TARGET)-objs		:= $(MODULE_C_OBJS)
 obj-m				:= $(TARGET).o
