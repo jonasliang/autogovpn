@@ -45,3 +45,7 @@ hash表满时采用与nf_conntrack移植的随机drop机制。
 
 domain_table计划采用的hash表，在配置更新时打算用指针替换的方式，这样就只需要用
 RCU来更新一个指针即可。
+
+07/10/2013 jonas1q84
+完成domain_table编码。如设想的，hash表实现，一个bucket就一条链表。配置下发时用
+RCU机制来更新指针。代码看起来还有点不够美观，找个时间走读修缮一下。

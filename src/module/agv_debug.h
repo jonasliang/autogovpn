@@ -12,15 +12,16 @@ static inline const char *agv_basename(const char *path)
 }
 
 /* 自定义打印宏 */
-#define AGV_PRINT(fmt...) do {												\
-	printk("%s:%d:%s: ", agv_basename(__FILE__), __LINE__, __FUNCTION__);	\
-	printk(fmt); 														 	\
+#define AGV_PRINT(fmt, args...) do {										\
+	printk("[%s:%d in %s()]: ", agv_basename(__FILE__), __LINE__, __FUNCTION__);\
+	printk(fmt, ##args); 												 	\
 } while (0)
 
 /* 用于检查错误条件并跳转到函数错误处理路径，函数内需有跳转_label标签 */
-#define AGV_CHECK_AND_GO(cond, label, fmt...) do {						\
+#define AGV_CHECK_AND_GO(cond, label, fmt, args...) do {					\
 	if (cond) {																\
-		AGV_PRINT(fmt);														\
+		if (fmt) 															\
+			AGV_PRINT(fmt, ##args);											\
 		goto _##label;														\
 	}																		\
 } while(0)

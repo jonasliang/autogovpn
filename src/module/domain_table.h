@@ -12,10 +12,11 @@ int domain_table_load(const struct domain_list_st* dlist);
 
 /*
  * @brief: domain_match - 域名匹配函数，匹配域名是否命中
- * @param: domain [in] 域名字符串
+ * @param: domain [in] 域名字符串指针
+ * @param: len [in] 字符串长度，不含\0结束符
  * @return: 命中返回1；不命中返回0；错误返回<0
  */
-int domain_match(const char* domain);
+int domain_match(const char* domain, size_t len);
 
 /*
  * @brief: domain_table_show - 当前域名列表输出

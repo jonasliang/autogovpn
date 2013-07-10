@@ -4,7 +4,8 @@
 #include <linux/moduleparam.h>
 #include <linux/list.h>
 #include <linux/mm.h>
-#include <linux/crc32c.h>
+#include <linux/crc32.h>
+#include <linux/spinlock_types.h>
 #include "domain_table.h"
 #include "agv_debug.h"
 
@@ -26,6 +27,7 @@ struct domain_htable {
 };
 
 static struct domain_htable* s_domain_htable = NULL;
+static DEFINE_SPINLOCK(s_domain_htable_lock); // lock only modify s_domain_htable
 
 inline static size_t domaincrc2bucket(uint32_t domain_crc, size_t htable_size)
 {
@@ -108,6 +110,8 @@ int domain_table_load(const struct domain_list_st* dlist)
 	int ret = -1;
 	int i = 0;
 	struct domain_htable* newdht = NULL;
+	struct domain_htable* olddht = NULL;
+
 	AGV_CHECK_AND_GO((!dlist || 0 == dlist->m_size || !dlist->m_domains_crc), \
 		done, "error! dlist is NULL or dlist size is 0!\n");
 
@@ -126,8 +130,16 @@ int domain_table_load(const struct domain_list_st* dlist)
 		list_add(&newnode->m_dnode, &newdht->m_htable[index].m_dnode);
 	}
 
-	// TODO: 换掉s_domain_htable
+	spin_lock(&s_domain_htable_lock);
+	olddht = rcu_dereference(s_domain_htable);
+	rcu_assign_pointer(s_domain_htable, newdht);
+	spin_unlock(&s_domain_htable_lock);
+
+	synchronize_rcu();
+	free_domain_htable(&olddht);
+
 	ret = 0;
+
 _done:
 	return ret;
 
@@ -139,10 +151,11 @@ _allocfailed:
 
 /*
  * @brief: domain_match - 域名匹配函数，匹配域名是否命中
- * @param: domain [in] 域名字符串
+ * @param: domain [in] 域名字符串指针
+ * @param: len [in] 字符串长度，不含\0结束符
  * @return: 命中返回1；不命中返回0；错误返回<0
  */
-int domain_match(const char* domain)
+int domain_match(const char* domain, size_t len)
 {
 	int matched = -1;
 	uint32_t domain_crc = 0;
@@ -151,13 +164,13 @@ int domain_match(const char* domain)
 	struct list_head* head = NULL;
 	struct domain_node* pos = NULL;
 
-	AGV_CHECK_AND_GO(!domain, done, "domain is NULL!\n");
-	domain_crc = crc32c(0, domain, strlen(domain));
+	AGV_CHECK_AND_GO((!domain || 0 == len), done, "domain is NULL!\n");
+	domain_crc = crc32(0, domain, len);
 
-	/* need rcu lock here */
-	rcu_read_lock();
+	/* need bh lock here */
+	rcu_read_lock_bh();
 	dhtable = rcu_dereference(s_domain_htable);
-	AGV_CHECK_AND_GO(!dhtable, unlock, "s_domain_htable is NULL!\n");
+	AGV_CHECK_AND_GO(!dhtable, unlock, NULL);
 	
 	bucket_index = domaincrc2bucket(domain_crc, dhtable->m_htable_size);
 	head = &dhtable->m_htable[bucket_index].m_dnode;
@@ -171,7 +184,8 @@ int domain_match(const char* domain)
 	matched = 0;
 
 _unlock:
-	rcu_read_unlock();
+	rcu_read_unlock_bh();
+
 _done:
 	return matched;
 }
@@ -183,7 +197,9 @@ _done:
 int domain_table_init(void)
 {
 	int ret = -1;
-	AGV_CHECK_AND_GO(!s_domain_htable, \
+	struct domain_htable* tmpdht = rcu_dereference(s_domain_htable);
+
+	AGV_CHECK_AND_GO(tmpdht, \
 		done, "init error! s_domain_htable should be NULL.\n");
 
 	if (s_domain_htable_size < MIN_DOMAIN_BUCKETS) 
@@ -203,8 +219,13 @@ _done:
  */
 void domain_table_cleanup(void)
 {
-	struct domain_htable* dt = rcu_dereference(s_domain_htable);
+	struct domain_htable* tmpdht = NULL;
+
+	spin_lock(&s_domain_htable_lock);
+	tmpdht = rcu_dereference(s_domain_htable);
 	rcu_assign_pointer(s_domain_htable, NULL);
+	spin_unlock(&s_domain_htable_lock);
+
 	synchronize_rcu();
-	free_domain_htable(&dt);
+	free_domain_htable(&tmpdht);
 }

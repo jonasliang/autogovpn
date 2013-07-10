@@ -7,7 +7,7 @@ static int agv_init(void)
 {
 	int ret = -1;
 	ret = domain_table_init();
-	AGV_PRINT("autogovpn succeeded to initialize! Built at: %s %s\n", 
+	AGV_PRINT("autogovpn drv succeeded to initialize! Built at: %s %s\n", 
 		__DATE__, __TIME__);
     return ret;
 }
@@ -15,6 +15,7 @@ static int agv_init(void)
 static void agv_exit(void)
 {
 	domain_table_cleanup();
+	AGV_PRINT("autogovpn drv exit.\n");
     return;
 }
 
