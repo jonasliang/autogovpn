@@ -66,7 +66,7 @@ _done:
 
 _vfailed:
 	kfree(newdht);
-	newdht = (void*)POISON_FREE;
+	POISON_POINTER(newdht);
 	goto _done;
 }
 
@@ -93,15 +93,15 @@ static void free_domain_htable(struct domain_htable** pdhtable)
 		list_for_each_entry_safe(pos, next, head, m_lnode) {
 			list_del(&pos->m_lnode);
 			kfree(pos);
-			pos = (void*)POISON_FREE;
+			POISON_POINTER(pos);
 		}
 	}
 
 	vfree(dhtable->m_htable);
-	dhtable->m_htable = (void*)POISON_FREE;
+	POISON_POINTER(dhtable->m_htable);
 
 	kfree(dhtable);
-	*pdhtable = (void*)POISON_FREE;
+	POISON_POINTER(*pdhtable);
 }
 
 /*

@@ -26,6 +26,8 @@ static inline const char *agv_basename(const char *path)
 	}																		\
 } while(0)
 
+#define POISON_POINTER(x) do { (x) = (void*)POISON_FREE; } while(0)
+
 /* TODO: 等级日志打印接口 */
 
 #endif
