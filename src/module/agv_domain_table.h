@@ -1,5 +1,5 @@
-#ifndef __DOMAIN_TABLE_H__
-#define __DOMAIN_TABLE_H__
+#ifndef __AGV_DOMAIN_TABLE_H__
+#define __AGV_DOMAIN_TABLE_H__
 
 #include "agv_common.h"
 
