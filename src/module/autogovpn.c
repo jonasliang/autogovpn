@@ -1,6 +1,6 @@
 #include <linux/kernel.h>
 #include <linux/module.h>
-#include "domain_table.h"
+#include "agv_domain_table.h"
 #include "agv_debug.h"
 
 static int agv_init(void)
