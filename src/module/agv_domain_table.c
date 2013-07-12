@@ -194,6 +194,18 @@ _done:
 }
 
 /*
+ * @brief: domain_table_show - 当前域名列表输出
+ * @return: 成功返回0；失败返回<0
+ */
+int domain_table_show(void)
+{
+	int ret = -1;
+	AGV_PRINT("Not implement yet\n");
+	ret = 0;
+	return ret;
+}
+
+/*
  * @brief: domain_table_init - 域名列表初始化
  * @return: 成功返回0；失败返回-1
  */
