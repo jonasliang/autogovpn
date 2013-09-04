@@ -1,4 +1,4 @@
-#ifndef __AGV_COMMON_H__
+﻿#ifndef __AGV_COMMON_H__
 #define __AGV_COMMON_H__
 /*
  * common header for app and module, define the common structure here. 

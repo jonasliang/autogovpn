@@ -1,4 +1,4 @@
-TARGET				:= autogovpn_drv
+﻿TARGET				:= autogovpn_drv
 
 KDIR				:= /lib/modules/$(shell uname -r)/build
 MODULE_C_SOURCES 	:= $(wildcard $(M)/*.c)
