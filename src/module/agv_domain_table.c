@@ -1,4 +1,5 @@
-﻿#include <linux/vmalloc.h>
+﻿#include <linux/slab.h>
+#include <linux/vmalloc.h>
 #include <linux/types.h>
 #include <linux/rcupdate.h>
 #include <linux/moduleparam.h>

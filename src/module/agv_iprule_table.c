@@ -1,4 +1,5 @@
 ﻿#include <linux/mm.h>
+#include <linux/vmalloc.h>
 #include <linux/list.h>
 #include <linux/spinlock_types.h>
 #include <net/netfilter/nf_conntrack.h>
