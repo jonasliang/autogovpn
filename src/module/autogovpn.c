@@ -4,9 +4,9 @@
 #include "agv_iprule_table.h"
 #include "agv_debug.h"
 
-static int agv_init(void)
+static int32_t agv_init(void)
 {
-	int ret = -1;
+	int32_t ret = -1;
 	ret = domain_table_init();
 	AGV_CHECK_AND_GO(ret < 0, errout, "domain_table_init failed!\n");
 

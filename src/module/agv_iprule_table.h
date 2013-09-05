@@ -4,16 +4,15 @@
 #include <linux/types.h>
 
 /* iprule规则，主机字节序 */
-struct agv_iprule {
+typedef struct {
 	uint32_t m_srcip;
 	uint32_t m_dstip;
-};
+} agv_iprule;
 
 /*
  * @brief: iprule_cmp - for iprule struct compare
  */
-static inline bool iprule_cmp(const struct agv_iprule* a, 
-		const struct agv_iprule* b)
+static inline bool iprule_cmp(const agv_iprule* a, const agv_iprule* b)
 {
 	return (a->m_srcip == b->m_srcip && 
 			a->m_dstip == b->m_dstip);
@@ -22,8 +21,7 @@ static inline bool iprule_cmp(const struct agv_iprule* a,
 /*
  * @brief: iprule_assign - for iprule struct assignment
  */
-static inline void iprule_assign(struct agv_iprule* to, 
-		const struct agv_iprule* from)
+static inline void iprule_assign(agv_iprule* to, const agv_iprule* from)
 {
 	to->m_srcip = from->m_srcip;
 	to->m_dstip = from->m_dstip;
@@ -34,20 +32,20 @@ static inline void iprule_assign(struct agv_iprule* to,
  * @param: iprule [in] - iprule规则
  * @return: 成功返回0；失败返回-1
  */
-int iprule_table_insert(const struct agv_iprule* iprule);
+int32_t iprule_table_insert(const agv_iprule* iprule);
 
 /*
  * @brief: iprule_table_match - 匹配一条iprule规则
  * @param: iprule [in] - iprule规则
  * @return: 命中返回1；不命中返回0；错误返回<0
  */
-int iprule_table_match(const struct agv_iprule* iprule);
+int32_t iprule_table_match(const agv_iprule* iprule);
 
 /*
  * @brief: iprule_table_init - ip规则列表初始化
  * @return: 成功返回0；失败返回-1
  */
-int iprule_table_init(void);
+int32_t iprule_table_init(void);
 
 /*
  * @brief: iprule_table_cleanup - ip规则列表清理函数

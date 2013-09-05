@@ -5,9 +5,9 @@
  * author: jonas1q84@gmail.com
  */
 
-struct domain_list_st {
-	int m_size;					// size of m_domains
-	unsigned int m_domains_crc[0];	// domain in crc32 format
-};
+typedef struct {
+	int32_t m_size;				// size of m_domains
+	uint32_t m_domains_crc[0];	// domain in crc32 format
+} domain_list_st;
 
 #endif
