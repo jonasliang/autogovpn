@@ -5,6 +5,8 @@
  * author: jonas1q84@gmail.com
  */
 
+#define AGV_DEV_PATH "/dev/autogovpn"
+
 typedef struct {
 	int32_t m_size;				// size of m_domains
 	uint32_t m_domains_crc[0];	// domain in crc32 format
