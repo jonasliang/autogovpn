@@ -7,8 +7,6 @@
 #include "agv_debug.h"
 #include "agv_devioctl.h"
 
-#define AGV_MAX_DEBUGCMD 64
-
 uint32_t g_agv_debug = 0;
 static int32_t s_agv_dev_major;
 
@@ -42,9 +40,8 @@ static ssize_t agv_chr_read(struct file * file, char __user * buf, size_t count,
 		"\n";
 	help_msg_len = strlen(help_msg) + 1;
 
-	if ( help_msg_len > (*pos) )
-	{
-		size_t read_len = min_t(size_t, count, help_msg_len - (*pos));
+	if ( help_msg_len > *pos ) {
+		size_t read_len = min_t(size_t, count, help_msg_len - *pos);
 		size_t len = copy_to_user(buf, &help_msg[*pos], read_len);
 		*pos += len;
 		return len;
@@ -56,6 +53,8 @@ static ssize_t agv_chr_read(struct file * file, char __user * buf, size_t count,
 static ssize_t agv_chr_write(struct file * file, const char __user * buf, 
 		size_t count, loff_t *pos)
 {
+#define AGV_MAX_DEBUGCMD 128
+
 	char cmdbuf[AGV_MAX_DEBUGCMD];
 	const char* cmdp = NULL;
 	size_t cmdlen = 0;
@@ -70,9 +69,9 @@ static ssize_t agv_chr_write(struct file * file, const char __user * buf,
 	if (cmdp) {
 		int32_t new_debug;
 		int32_t n = sscanf(cmdp, "debug=%d", &new_debug);
-		if (1 == n ) {
+		if (1 == n) {
 			g_agv_debug = new_debug == 0 ? 0 : 1;
-			AGV_PRINT("set g_agv_debug=%d\n", g_agv_debug);
+			AGV_PRINT("setting g_agv_debug=%d\n", g_agv_debug);
 		}		
 	}
 	
